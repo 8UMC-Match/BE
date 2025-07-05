@@ -16,6 +16,9 @@ import com.sku.collaboration.project.domain.word.entity.Word;
 import com.sku.collaboration.project.domain.word.repository.WordRepository;
 import com.sku.collaboration.project.global.exception.CustomException;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -92,16 +95,21 @@ public class UserService {
   }
 
   @Transactional(readOnly = true)
-  public List<WordResponse> getUserVocabulary(User user) {
-    return wordRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId()).stream()
-        .map(word -> WordResponse.builder()
-            .wordId(word.getId())
-            .name(word.getName())
-            .description(word.getDescription())
-            .createdAt(word.getCreatedAt())
-            .build())
-        .toList();
+  public Map<String, List<WordResponse>> getUserVocabulary(User user) {
+    List<Word> words = wordRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
+
+    return words.stream()
+        .collect(Collectors.groupingBy(
+            word -> word.getCreatedAt().toLocalDate().toString(), // "2025-07-06"
+            LinkedHashMap::new, // 날짜 순서를 유지하기 위해 LinkedHashMap 사용
+            Collectors.mapping(word -> WordResponse.builder()
+                .wordId(word.getId())
+                .name(word.getName())
+                .description(word.getDescription())
+                .build(), Collectors.toList())
+        ));
   }
+
 
   @Transactional
   public Boolean addUserWordsResponse(Long userId, AskWordIdRequest askWordIdRequest) {

@@ -11,5 +11,4 @@ public class WordResponse {
   private Long wordId;
   private String name;
   private String description;
-  private LocalDateTime createdAt;
 }
