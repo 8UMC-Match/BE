@@ -2,7 +2,8 @@ package com.sku.collaboration.project.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.sku.collaboration.project.domain.user.enums.Type;
+import com.sku.collaboration.project.domain.user.enums.Language;
+import com.sku.collaboration.project.domain.user.enums.Role;
 import com.sku.collaboration.project.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,31 +33,30 @@ public class User extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long userId;
 
   @Column(nullable = false, unique = true)
-  private String username;
+  private String username; // 이메일
 
+  @JsonIgnore
   @Column(nullable = false)
   private String password;
 
   @Column(nullable = false)
-  private String nickname;
-
-  @Column(nullable = false)
-  private Integer level;
+  private String name;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = true)
-  private Type type;
+  private Language language;
 
+  private String introduction;
+
+  @Builder.Default
   @Column(nullable = false)
-  private LocalDateTime createdAt;
+  private Integer reviewCount = 0;
 
-  @Column
-  private LocalDateTime modifiedAt;
-
-  // Getters and setters...
+  @Column(name = "role", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Role authRole;
 
   @JsonIgnore
   @Column(name = "refresh_token")
