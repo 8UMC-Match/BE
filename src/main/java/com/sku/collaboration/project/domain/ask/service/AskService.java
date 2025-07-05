@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import com.sku.collaboration.project.domain.user.enums.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,28 @@ public class AskService {
     private final AskWordRepository askWordRepository;
 
     public AskResponse toAskResponse(Long userId, AskRequest askRequest) {
-        String prompt = askRequest.getQuestion() + " 이 문장을 지적 장애인 수준에서 이해하기 쉬운 문장으로 변환해서 내게 보내줘. 대답은 필요없어";
+        //String prompt = askRequest.getQuestion() + " 이 문장을 지적 장애인 수준에서 이해하기 쉬운 문장으로 변환해서 내게 보내줘. 대답은 필요없어";
+
+        //User user = userRepository.findById(userId)
+        //     .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+
+        User user = userRepository.findById(userId)
+            .orElseThrow();
+
+        String baseQuestion = askRequest.getQuestion();
+        String prompt;
+
+        // 사용자 유형에 따라 맞춤 프롬프트 생성
+        if (user.getType() == Type.INTELLECTUAL_DISABILITY) {
+            prompt = baseQuestion + " 이 문장을 지적 장애인 수준에서 이해하기 쉬운 문장으로 변환해서 내게 보내줘. 대답은 필요없어";
+        } else if (user.getType() == Type.SENIOR) {
+            prompt = baseQuestion + " 이 문장을 노인이 이해하기 쉽게 바꿔줘. 너무 긴 문장이나 어려운 단어는 피하고, 쉽게 설명해줘. 대답은 필요없어";
+        } else if (user.getType() == Type.CHILD) {
+            prompt = baseQuestion + " 이 문장을 어린이가 이해할 수 있도록 바꿔줘. 간단하고 재미있게 설명해줘. 대답은 필요없어";
+        } else {
+            // ETC 또는 예외 처리용 기본 메시지
+            prompt = baseQuestion + " 이 문장을 일반인이 이해하기 쉽게 변환해줘. 대답은 필요없어";
+        }
 
         List<Message> messages = List.of(
                 new Message("system", "You are a helpful assistant."),
@@ -71,8 +93,8 @@ public class AskService {
                 .getMessage()
                 .getContent();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow();
+        //User user = userRepository.findById(userId)
+         //       .orElseThrow();
 
         Ask ask = Ask.builder()
                 .question(askRequest.getQuestion())
