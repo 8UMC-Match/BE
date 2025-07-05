@@ -1,5 +1,6 @@
 package com.sku.collaboration.project.domain.chat.service;
 
+import com.sku.collaboration.project.domain.ask.dto.request.AskRequest;
 import com.sku.collaboration.project.domain.chat.dto.Message;
 import com.sku.collaboration.project.domain.chat.dto.request.ChatRequest;
 import com.sku.collaboration.project.domain.chat.dto.response.ChatResponse;
