@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
+          distribution: 'temurin'  # ✅ 필수로 지정해야 함
 
       - name: Build with Gradle
         run: ./gradlew clean build -x test
