@@ -9,10 +9,10 @@ import lombok.Getter;
 public class MyBadgeListResponse {
 
   @Schema(description = "배찌 아이디", example = "1")
-  private Long badgeId;
+  private final Long badgeId;
 
   @Schema(description = "배지 이름", example = "성장배찌")
-  private String name;
+  private final String name;
 
   public MyBadgeListResponse(UserBadge userBadge) {
     this.badgeId = userBadge.getBadge().getId();
