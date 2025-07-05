@@ -12,7 +12,8 @@ public class AuthMapper {
         .accessToken(accessToken)
         .userId(user.getId())
         .username(user.getUsername())
-        .role(user.getAuthRole())
+        .badge(user.getBadge())
+            .type(user.getType())
         .expirationTime(expirationTime)
         .build();
   }

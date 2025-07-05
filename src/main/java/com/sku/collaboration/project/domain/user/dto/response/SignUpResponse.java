@@ -16,12 +16,6 @@ public class SignUpResponse {
   private String username;
 
   @Schema(description = "회원가입된 사용자 이름", example = "재연")
-  private String name;
-
-  @Schema(description = "회원가입된 사용자 언어", example = "KO")
-  private String language;
-
-  @Schema(description = "회원가입된 사용자 소개", example = "안녕하세요, 재연입니다.")
-  private String introduction;
+  private String nickname;
 
 }
