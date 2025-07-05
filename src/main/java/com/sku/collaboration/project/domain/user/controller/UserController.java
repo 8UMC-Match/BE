@@ -44,7 +44,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> changePassword(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest) {
-    userService.changePassword(userDetails.getUser().getUserId(), passwordUpdateRequest);
+    userService.changePassword(userDetails.getUser().getId(), passwordUpdateRequest);
     return ResponseEntity.ok(BaseResponse.success("비밀번호가 변경되었습니다.", null));
   }
 
@@ -54,7 +54,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> changeLanguage(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody LanguageUpdateRequest newLanguage) {
-    userService.changeLanguage(userDetails.getUser().getUserId(), newLanguage);
+    userService.changeLanguage(userDetails.getUser().getId(), newLanguage);
     return ResponseEntity.ok(BaseResponse.success("언어가 변경되었습니다.", null));
   }
 
@@ -64,7 +64,7 @@ public class UserController {
   public ResponseEntity<BaseResponse<Void>> changeName(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestBody @Valid NameUpdateRequest nameUpdateRequest) {
-    userService.changeName(userDetails.getUser().getUserId(), nameUpdateRequest);
+    userService.changeName(userDetails.getUser().getId(), nameUpdateRequest);
     return ResponseEntity.ok(BaseResponse.success("사용자 이름이 변경되었습니다.", null));
   }
 
