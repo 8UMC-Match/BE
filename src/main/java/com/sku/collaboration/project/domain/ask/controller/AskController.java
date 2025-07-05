@@ -1,6 +1,7 @@
 package com.sku.collaboration.project.domain.ask.controller;
 
 import com.sku.collaboration.project.domain.ask.dto.request.AskRequest;
+import com.sku.collaboration.project.domain.ask.dto.request.AskWordRequest;
 import com.sku.collaboration.project.domain.ask.dto.response.AskResponse;
 import com.sku.collaboration.project.domain.ask.dto.response.AskWordResponse;
 import com.sku.collaboration.project.domain.ask.dto.response.AskWordsResponse;
@@ -44,17 +45,18 @@ public class AskController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUser().getId();
         AskWordsResponse response = askService.toAskWordsResponse(userId, askId);
-        return ResponseEntity.ok(BaseResponse.success("회원가입이 완료되었습니다.", response));
+        return ResponseEntity.ok(BaseResponse.success("질문에 대한 단어장 보기 완료되었습니다.", response));
     }
     //단어 추가하기(질문에 대한 단어 보기)
     @Operation(summary = "질문에 대한 단어 추가하기 API", description = "사용자가 질문 후 단어 보기에서 단어를 추가할 때 요청되는 API")
-    @GetMapping("/{askId}/vocab1")
-    public ResponseEntity<BaseResponse<AskWordsResponse>> addWord(
+    @PostMapping("/{askId}/vocab")
+    public ResponseEntity<BaseResponse<AskWordResponse>> addWord(
             @PathVariable @Valid Long askId,
+            @RequestBody @Valid AskWordRequest askWordRequest,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId = customUserDetails.getUser().getId();
-        AskWordsResponse response = askService.toAskWordsResponse(userId, askId);
-        return ResponseEntity.ok(BaseResponse.success("회원가입이 완료되었습니다.", response));
+        AskWordResponse response = askService.toAskWordResponse(userId, askId, askWordRequest);
+        return ResponseEntity.ok(BaseResponse.success("질문한 단어에 대한 요청이 완료되었습니다.", response));
     }
     //단어장에 추가하기(나의 단어장에 추가)
 
