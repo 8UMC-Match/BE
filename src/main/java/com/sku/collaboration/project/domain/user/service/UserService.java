@@ -54,6 +54,7 @@ public class UserService {
         .username(request.getUsername())
         .password(encodedPassword)
         .nickname(request.getNickname())
+        .type(request.getType())
         .build();
 
     // 저장 및 로깅

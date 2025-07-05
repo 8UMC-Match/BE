@@ -1,8 +1,10 @@
 package com.sku.collaboration.project.domain.user.dto.request;
 
+import com.sku.collaboration.project.domain.user.enums.Type;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,10 @@ public class SignUpRequest {
       message = "비밀번호는 최소 8자 이상, 숫자 및 특수문자를 포함해야 합니다.")
   @Schema(description = "비밀번호", example = "password123!")
   private String password;
+
+  @NotNull(message = "사용자 유형 항목은 필수입니다.")
+  @Schema(description = "사용자 유형", example = "INTELLECTUAL_DISABILITY")
+  private Type type;
 
   @NotBlank(message = "사용자 이름 항목은 필수입니다.")
   @Schema(description = "사용자 이름", example = "재연")

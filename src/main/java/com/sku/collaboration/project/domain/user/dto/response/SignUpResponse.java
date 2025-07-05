@@ -1,5 +1,6 @@
 package com.sku.collaboration.project.domain.user.dto.response;
 
+import com.sku.collaboration.project.domain.user.enums.Type;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,5 +18,8 @@ public class SignUpResponse {
 
   @Schema(description = "회원가입된 사용자 이름", example = "재연")
   private String nickname;
+
+  @Schema(description = "회원가입된 사용자 유형", example = "INTELLECTUAL_DISABILITY")
+  private Type type;
 
 }
