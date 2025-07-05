@@ -1,6 +1,7 @@
 package com.sku.collaboration.project.domain.ask.service;
 
 import com.sku.collaboration.project.domain.ask.dto.request.AskRequest;
+import com.sku.collaboration.project.domain.ask.dto.request.AskWordRequest;
 import com.sku.collaboration.project.domain.ask.dto.response.AskResponse;
 import com.sku.collaboration.project.domain.ask.dto.response.AskWordResponse;
 import com.sku.collaboration.project.domain.ask.dto.response.AskWordsResponse;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -85,6 +87,7 @@ public class AskService {
                 .build();
     }
 
+    @Transactional
     public AskWordsResponse toAskWordsResponse(Long userId, Long askId) {
         // Ask 엔티티에서 question 추출
         Ask ask = askRepository.findById(askId)
@@ -144,6 +147,55 @@ public class AskService {
 
         return AskWordsResponse.builder()
                 .data(resultList)
+                .build();
+    }
+
+    @Transactional
+    public AskWordResponse toAskWordResponse(Long userId, Long askId, AskWordRequest askWordRequest) {
+        // 1. Ask 조회
+        Ask ask = askRepository.findById(askId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 질문이 존재하지 않습니다."));
+
+        // 2. 프롬프트 생성 (단일 단어에 대한 설명 요청)
+        String prompt = askWordRequest.getName() + " 이 단어를 지적 장애인 수준에서 이해하기 쉬운 문장으로 설명해줘. 대답은 필요없어";
+
+        List<Message> messages = List.of(
+                new Message("system", "You are a helpful assistant."),
+                new Message("user", prompt)
+        );
+
+        // 3. 요청 객체 구성
+        ChatRequest request = new ChatRequest(model, messages);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        HttpEntity<ChatRequest> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<ChatResponse> response = restTemplate.postForEntity(apiUrl, entity, ChatResponse.class);
+
+        // 4. GPT 응답 내용 추출
+        String description = response.getBody()
+                .getChoices()
+                .get(0)
+                .getMessage()
+                .getContent()
+                .trim();
+
+        // 5. AskWord 저장
+        AskWord askWord = AskWord.builder()
+                .name(askWordRequest.getName())
+                .description(description)
+                .ask(ask)
+                .build();
+
+        AskWord saved = askWordRepository.save(askWord);
+
+        // 6. 단일 DTO 반환
+        return AskWordResponse.builder()
+                .askWordId(saved.getId())
+                .name(saved.getName())
+                .description(saved.getDescription())
                 .build();
     }
 }

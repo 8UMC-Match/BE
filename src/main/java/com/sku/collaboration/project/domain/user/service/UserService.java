@@ -1,6 +1,9 @@
 package com.sku.collaboration.project.domain.user.service;
 
 import com.sku.collaboration.project.domain.ask.repository.AskRepository;
+import com.sku.collaboration.project.domain.askWord.entity.AskWord;
+import com.sku.collaboration.project.domain.askWord.repository.AskWordRepository;
+import com.sku.collaboration.project.domain.user.dto.request.AskWordIdRequest;
 import com.sku.collaboration.project.domain.user.dto.request.SignUpRequest;
 import com.sku.collaboration.project.domain.user.dto.response.SignUpResponse;
 import com.sku.collaboration.project.domain.user.dto.response.BadgeResponse;
@@ -9,6 +12,7 @@ import com.sku.collaboration.project.domain.user.exception.UserErrorCode;
 import com.sku.collaboration.project.domain.user.mapper.UserMapper;
 import com.sku.collaboration.project.domain.user.repository.UserRepository;
 import com.sku.collaboration.project.domain.word.dto.response.WordResponse;
+import com.sku.collaboration.project.domain.word.entity.Word;
 import com.sku.collaboration.project.domain.word.repository.WordRepository;
 import com.sku.collaboration.project.global.exception.CustomException;
 import java.util.List;
@@ -29,6 +33,7 @@ public class UserService {
   private final WordRepository wordRepository;
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
+  private final AskWordRepository askWordRepository;
 
   @Transactional
   public SignUpResponse signUp(SignUpRequest request) {
@@ -98,4 +103,24 @@ public class UserService {
         .toList();
   }
 
+  @Transactional
+  public Boolean addUserWordsResponse(Long userId, AskWordIdRequest askWordIdRequest) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+    for (Long askWordId : askWordIdRequest.getAskwordIds()) {
+      AskWord askWord = askWordRepository.findById(askWordId)
+              .orElseThrow(() -> new IllegalArgumentException("해당 단어가 존재하지 않습니다."));
+
+      Word word = Word.builder()
+              .name(askWord.getName())
+              .description(askWord.getDescription())
+              .user(user)
+              .build();
+
+      wordRepository.save(word);
+    }
+
+    return true;
+  }
 }

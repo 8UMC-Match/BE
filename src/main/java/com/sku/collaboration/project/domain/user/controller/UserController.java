@@ -1,5 +1,8 @@
 package com.sku.collaboration.project.domain.user.controller;
 
+import com.sku.collaboration.project.domain.ask.dto.request.AskWordRequest;
+import com.sku.collaboration.project.domain.ask.dto.response.AskWordResponse;
+import com.sku.collaboration.project.domain.user.dto.request.AskWordIdRequest;
 import com.sku.collaboration.project.domain.user.dto.request.SignUpRequest;
 import com.sku.collaboration.project.domain.user.dto.response.BadgeResponse;
 import com.sku.collaboration.project.domain.user.dto.response.SignUpResponse;
@@ -48,5 +51,16 @@ public class UserController {
 
     List<WordResponse> vocab = userService.getUserVocabulary(userDetails.getUser());
     return ResponseEntity.ok(BaseResponse.success("나의 단어장 조회 성공", vocab));
+  }
+
+  @Operation(summary = "질문에 대한 단어 추가하기 API", description = "사용자가 질문 후 단어 보기에서 단어를 추가할 때 요청되는 API")
+  @PostMapping("/vocab/{askId}")
+  public ResponseEntity<BaseResponse<Boolean>> addWord(
+          @PathVariable @Valid Long askId,
+          @RequestBody @Valid AskWordIdRequest askWordIdRequest,
+          @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    Long userId = customUserDetails.getUser().getId();
+    Boolean response = userService.addUserWordsResponse(userId, askWordIdRequest);
+    return ResponseEntity.ok(BaseResponse.success("질문한 단어에 대한 저장 요청이 완료되었습니다.", response));
   }
 }
