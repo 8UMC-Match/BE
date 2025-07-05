@@ -37,6 +37,8 @@ src/main/resources/application.properties
 ### VS Code ###
 .vscode/
 
+application.properties
+
 
 ### MacOS 관련 ###
 .DS_Store
